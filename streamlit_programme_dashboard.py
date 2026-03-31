@@ -391,7 +391,4 @@ st.caption("Tip: upload your latest Excel report and map the columns in the side
 '''
 
 
-Open terminal in the folder and run:
 
-```bash
-pip install -r requirements.txt
