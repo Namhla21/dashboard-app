@@ -3,12 +3,12 @@ import pandas as pd
 
 st.set_page_config(page_title="HCT Dashboard", layout="wide")
 
-st.title("HCT Programme Dashboard")
+st.title("HCT Programme Dashboard - April")
 
-df = pd.read_excel(uploaded_file, sheet_name="APR 2025 HCT Captured Data", header=4)
+uploaded_file = st.file_uploader("Upload Excel file", type=["xlsx"])
 
 if uploaded_file:
-    df = pd.read_excel(uploaded_file, sheet_name=0, header=4)
+    df = pd.read_excel(uploaded_file, sheet_name="APR 2025 HCT Captured Data", header=4)
 
     df = df.dropna(how="all")
     df.columns = [str(c).strip() for c in df.columns]
@@ -64,33 +64,46 @@ if uploaded_file:
 
         df["Age Group"] = df["Age"].apply(age_group)
 
+    id_columns = [
+        c for c in [
+            "Session Date (Year/Month/Date)",
+            "Patient",
+            "DOB (Year/Month/Date)",
+            "Age",
+            "Age Group",
+            "Sex",
+            "Location"
+        ] if c in df.columns
+    ]
+
     long_df = df.melt(
-        id_vars=[c for c in ["Session Date (Year/Month/Date)", "Patient", "DOB (Year/Month/Date)", "Age", "Age Group", "Sex", "Location"] if c in df.columns],
+        id_vars=id_columns,
         value_vars=existing_service_cols,
         var_name="Programme",
         value_name="Value"
     )
 
-    long_df = long_df[long_df["Value"].notna()]
-    long_df = long_df[pd.to_numeric(long_df["Value"], errors="coerce").fillna(0) > 0]
+    long_df["Value"] = pd.to_numeric(long_df["Value"], errors="coerce")
+    long_df = long_df[long_df["Value"].fillna(0) > 0]
 
     st.sidebar.header("Filters")
 
-    programme = st.sidebar.selectbox("Choose Programme", sorted(long_df["Programme"].unique()))
+    programme = st.sidebar.selectbox(
+        "Choose Programme",
+        sorted(long_df["Programme"].dropna().unique())
+    )
 
-    filtered = long_df[long_df["Programme"] == programme]
+    filtered = long_df[long_df["Programme"] == programme].copy()
 
     if "Location" in filtered.columns:
         locations = ["All"] + sorted(filtered["Location"].dropna().astype(str).unique().tolist())
         selected_location = st.sidebar.selectbox("Choose Location", locations)
-
         if selected_location != "All":
             filtered = filtered[filtered["Location"].astype(str) == selected_location]
 
     if "Sex" in filtered.columns:
         sexes = ["All"] + sorted(filtered["Sex"].dropna().astype(str).unique().tolist())
         selected_sex = st.sidebar.selectbox("Choose Sex", sexes)
-
         if selected_sex != "All":
             filtered = filtered[filtered["Sex"].astype(str) == selected_sex]
 
@@ -130,12 +143,15 @@ if uploaded_file:
         st.write(location_counts)
 
     if "Session Date (Year/Month/Date)" in filtered.columns:
-        st.subheader("Trend Over Time")
         filtered["Session Date (Year/Month/Date)"] = pd.to_datetime(
             filtered["Session Date (Year/Month/Date)"], errors="coerce"
         )
-        trend = filtered.dropna(subset=["Session Date (Year/Month/Date)"]).groupby(
-            filtered["Session Date (Year/Month/Date)"].dt.date
-        ).size()
+
+        trend_df = filtered.dropna(subset=["Session Date (Year/Month/Date)"]).copy()
+        trend_df["Date Only"] = trend_df["Session Date (Year/Month/Date)"].dt.date
+
+        trend = trend_df.groupby("Date Only").size()
+
         if len(trend) > 0:
+            st.subheader("Trend Over Time")
             st.line_chart(trend)
