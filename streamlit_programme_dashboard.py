@@ -388,7 +388,7 @@ st.download_button(
 )
 
 st.caption("Tip: upload your latest Excel report and map the columns in the sidebar if the app does not detect them correctly.")
-'''
+
 
 
 
