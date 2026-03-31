@@ -5,7 +5,7 @@ st.set_page_config(page_title="HCT Dashboard", layout="wide")
 
 st.title("HCT Programme Dashboard")
 
-uploaded_file = st.file_uploader("Upload Excel file", type=["xlsx"])
+df = pd.read_excel(uploaded_file, sheet_name="APR 2025 HCT Captured Data", header=4)
 
 if uploaded_file:
     df = pd.read_excel(uploaded_file, sheet_name=0, header=4)
