@@ -390,20 +390,7 @@ st.download_button(
 st.caption("Tip: upload your latest Excel report and map the columns in the sidebar if the app does not detect them correctly.")
 '''
 
-readme = """# Streamlit Programme Dashboard
 
-## What this app does
-This dashboard lets your workplace:
-- upload an Excel or CSV file
-- click a programme and filter the data
-- view names, age breakdowns, branches, results, and trends
-- download filtered results
-
-## Files
-- `streamlit_programme_dashboard.py` -> main Streamlit app
-- `requirements.txt` -> Python packages needed
-
-## Install
 Open terminal in the folder and run:
 
 ```bash
