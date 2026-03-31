@@ -3,17 +3,26 @@ import pandas as pd
 
 st.set_page_config(page_title="HCT Dashboard", layout="wide")
 
-st.title("HCT Programme Dashboard - April")
+st.title("HCT Programme Dashboard")
 
 uploaded_file = st.file_uploader("Upload Excel file", type=["xlsx"])
 
 if uploaded_file:
-    df = pd.read_excel(uploaded_file, sheet_name="APR 2025 HCT Captured Data", header=4)
+    month_sheet_map = {
+        "April": "APR 2025 HCT Captured Data",
+        "May": "MAY 2025 HCT Captured Data",
+        "June": "JUN 2025 HCT Captured Data"
+    }
+
+    selected_month = st.sidebar.selectbox("Choose Month", list(month_sheet_map.keys()))
+    selected_sheet = month_sheet_map[selected_month]
+
+    df = pd.read_excel(uploaded_file, sheet_name=selected_sheet, header=4)
 
     df = df.dropna(how="all")
     df.columns = [str(c).strip() for c in df.columns]
 
-    st.subheader("Raw Data")
+    st.subheader(f"Raw Data - {selected_month}")
     st.write(df)
 
     service_cols = [
@@ -107,7 +116,7 @@ if uploaded_file:
         if selected_sex != "All":
             filtered = filtered[filtered["Sex"].astype(str) == selected_sex]
 
-    st.subheader(f"Records for: {programme}")
+    st.subheader(f"Records for: {programme} ({selected_month})")
     st.write(filtered)
 
     col1, col2, col3 = st.columns(3)
