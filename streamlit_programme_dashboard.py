@@ -141,11 +141,7 @@ if uploaded_files:
         "April": "APR 2025 HCT Captured Data",
         "May": "MAY 2025 HCT Captured Data",
         "June": "JUN 2025 HCT Captured Data",
-        "July": "JUL 2025 HCT Captured Data",
-        "August": "AUG 2025 HCT Captured Data",
-        "September": "SEP 2025 HCT CAprured Data",
-    }
-
+       
     # Sidebar controls
     st.sidebar.markdown("## 📊 Dashboard Controls")
     selected_month = st.sidebar.selectbox("📅 Select Month", list(month_sheet_map.keys()))
